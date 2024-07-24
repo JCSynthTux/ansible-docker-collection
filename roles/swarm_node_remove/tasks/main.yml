@@ -1,4 +1,13 @@
 ---
+- name: Remove node from cluster
+  block:
+  - name: Get info on node
+    docker_node_info:
+      name: '{{ ansible_hostname }}'
+    register: result
+    delegate_to: '{{ docker__swarm_managers }}'
+    run_once: True
+
 1. Drain Node
 2. If Current Master - Choose new Master
 3. New Master kicks out Node
