@@ -1,0 +1,9 @@
+docker__swarm_secret_name: ''
+
+docker__swarm_secret_data: ''
+
+docker__swarm_secret_rolling_version: True
+
+docker__swarm_secret_state: 'present'
+
+docker__swarm_secret_state_force: False

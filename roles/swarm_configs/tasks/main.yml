@@ -1,0 +1,14 @@
+---
+- name: Manage swarm configs
+  docker_secret:
+    name: '{{ item.name }}'
+    data: '{{ item.data | default(omit) }}'
+    data_src: '{{ item.data_src | default(omit) }}'
+    labels: '{{ item.labels | default(omit) }}'
+    rolling_versions: '{{ item.rolling_versions }}'
+    state: '{{ item.state }}'
+    force: '{{ item.state_force }}'
+  delegate_to: '{{ docker__swarm_managers }}'
+  run_once: True
+  loop: '{{ docker__swarm_configs }}'
+  loop_control: '{{ item.name }}'

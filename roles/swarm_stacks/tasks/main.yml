@@ -1,0 +1,13 @@
+---
+- name: Manage stacks
+  docker_secret:
+    name: '{{ item.name }}'
+    compose: '{{ item.compose }}'
+    state: '{{ item.state }}'
+    prune: '{{ item.prune }}'
+    resolve_image: '{{ item.resolve_image }}'
+    with_registry_auth: '{{ item.with_registry_auth }}'
+  delegate_to: '{{ docker__swarm_managers }}'
+  run_once: True
+  loop: '{{ docker__swarm_stacks }}'
+  loop_control: '{{ item.name }}'

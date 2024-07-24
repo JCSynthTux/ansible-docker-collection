@@ -1,0 +1,5 @@
+---
+1. Drain Node
+2. If Current Master - Choose new Master
+3. New Master kicks out Node
+4. Node leaves Swarm
