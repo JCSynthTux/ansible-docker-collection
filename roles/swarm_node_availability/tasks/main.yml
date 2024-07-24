@@ -1,0 +1,8 @@
+---
+- name: Set node availability
+  docker_node:
+    hostname: '{{ ansible_hostname }}'
+    availability: '{{ docker__swarm_node_availability }}'
+  delegate_to: '{{ docker__swarm_managers }}'
+  run_once: True
+
