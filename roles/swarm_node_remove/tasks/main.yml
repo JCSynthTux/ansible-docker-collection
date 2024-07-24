@@ -1,12 +1,51 @@
 ---
 - name: Remove node from cluster
   block:
-  - name: Get info on node
-    docker_node_info:
-      name: '{{ ansible_hostname }}'
-    register: result
+  #- name: Get info on node
+  #  docker_node_info:
+  #    name: '{{ ansible_hostname }}'
+  #  register: docker__node_info
+  #  delegate_to: '{{ docker__swarm_managers }}'
+  #  run_once: True
+
+  #- name: Register fact about role
+  #  set_fact:
+  #    docker__swarm_node_role: "{{ docker__node_info.Spec.Role }}"
+
+  #- name: Register fact about leader status
+  #  set_fact:
+  #    docker__swarm_leader: "{{ docker__node_info.ManagerStatus.Leader }}"
+  #  when: docker__swarm_node_role == 'manager'
+
+  - name: Demote node to worker
+    docker_node:
+      hostname: '{{ ansible_hostname }}'
+      role: 'worker'
     delegate_to: '{{ docker__swarm_managers }}'
     run_once: True
+    #when: docker__swarm_leader == true
+
+  - name: Drain node
+    docker_node:
+      hostname: '{{ ansible_hostname }}'
+      availability: 'drain'
+    delegate_to: '{{ docker__swarm_managers }}'
+    run_once: True
+
+  - name: Check for running containers
+    docker_container_info:
+    register: docker__container_info
+    until: docker__container_info.containers | length == 0
+    retries: 5
+    delay: 10
+
+  - name: Debug container information
+    debug:
+      msg: "Running containers: {{ docker__container_info.containers }}"
+
+  - name: Register fact about running containers
+    set_fact:
+      docker__running_containers: "{{ container_info.containers | length == 0 }}"
 
 1. Drain Node
 2. If Current Master - Choose new Master
