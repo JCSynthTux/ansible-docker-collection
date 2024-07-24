@@ -4,5 +4,5 @@
     hostname: '{{ ansible_hostname }}'
     labels: '{{ docker__swarm_node_labels }}'
     label_state: '{{ docker__swarm_node_labels_state | default(omit)  }}'
-  delegate_to: "{{ docker__swarm_managers }}"
+  delegate_to: '{{ docker__swarm_managers }}'
   run_once: True
