@@ -1,1 +1,7 @@
 docker__swarm_node_labels: ''
+
+docker__swarm_node_labels_group: ''
+
+docker__swarm_node_labels_host: ''
+
+docker__swarm_node_labels_combines: '{{ docker__swarm_node_labels + docker__swarm_node_labels_group + docker__swarm_node_labels_host }}'
