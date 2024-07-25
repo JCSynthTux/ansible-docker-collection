@@ -59,4 +59,5 @@
       delegate_to: '{{ docker__swarm_managers }}'
       run_once: True
       when: docker__running_containers == False
+  when: docker__node_leave == True
 
