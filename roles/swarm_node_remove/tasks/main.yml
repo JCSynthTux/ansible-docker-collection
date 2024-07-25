@@ -47,7 +47,16 @@
     set_fact:
       docker__running_containers: "{{ container_info.containers | length == 0 }}"
 
-1. Drain Node
-2. If Current Master - Choose new Master
-3. New Master kicks out Node
-4. Node leaves Swarm
+  - name: Node leaves swarm
+    docker_swarm:
+      state: 'absent'
+    when: docker__running_containers == False   
+
+  - name: Managers removes node from swarm
+    docker_swarm:
+      state: 'remove'
+      id: '{{ ansible_hostname }}'
+    delegate_to: '{{ docker__swarm_managers }}'
+    run_once: True
+    when: docker__running_containers == False
+
