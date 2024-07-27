@@ -1,0 +1,13 @@
+---
+namespace: jchroback
+name: docker
+version: 1.0.0
+readme: README.md
+authors:
+  - Jan Chroback
+description: Ansible collection to manage Docker and Docker Swarm
+license:
+  - GPL-3.0-or-later
+tags: [docker, swarm, cluster, container]
+repository: https://github.com/JCSynthTux/ansible-docker-collection
+issues: https://github.com/JCSynthTux/ansible-docker-collection/issues
