@@ -7,7 +7,8 @@
   run_once: True
 
 - name: Check for running containers
-  community.docker.docker_container_info:
+  community.docker.docker_host_info:
+    containers: True
   register: docker__container_info
   until: docker__container_info.containers | length == 0
   retries: 5
