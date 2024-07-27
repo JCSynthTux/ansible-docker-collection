@@ -1,0 +1,7 @@
+docker__plugins: []
+
+docker__plugins_group: []
+
+docker__plugins_host: []
+
+docker__plugins_combines: "{{ docker__plugins + docker__plugins_group + docker__plugins_host }}"
