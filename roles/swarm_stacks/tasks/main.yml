@@ -7,7 +7,8 @@
     prune: "{{ item.prune }}"
     resolve_image: "{{ item.resolve_image }}"
     with_registry_auth: "{{ item.with_registry_auth }}"
-  delegate_to: "{{ docker__swarm_managers }}[0]"
+  #delegate_to: "{{ docker__swarm_managers }}[0]"
   run_once: True
   loop: "{{ docker__swarm_stacks }}"
   loop_control: "{{ item.name }}"
+  when: "'docker__swarm_managers' in group_names"
