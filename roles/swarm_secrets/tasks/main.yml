@@ -8,7 +8,7 @@
     rolling_versions: "{{ item.rolling_versions }}"
     state: "{{ item.state }}"
     force: "{{ item.state_force }}"
-  delegate_to: "{{ docker__swarm_managers }}"
+  delegate_to: "{{ docker__swarm_managers }}[0]"
   run_once: True
   loop: "{{ docker__swarm_secrets }}"
   loop_control: "{{ item.name }}"
