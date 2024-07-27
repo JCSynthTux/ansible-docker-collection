@@ -3,7 +3,7 @@
   community.docker.docker_node:
     hostname: "{{ ansible_hostname }}"
     availability: "{{ docker__swarm_node_availability }}"
-  delegate_to: "{{ docker__swarm_managers }}"
+  delegate_to: "{{ groups['docker__swarm_managers'][0] }}"
   run_once: True
 
 - name: Check for running containers
