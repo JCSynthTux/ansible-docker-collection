@@ -24,27 +24,27 @@
     listen_addr: "{{ docker__swarm_listen_addr }}"
     subnet_size: "{{ docker__swarm_subnet_size | default (omit) }}"
     task_history_retention_limit: "{{ docker__swarm_task_history_retention_limit }}"
-  delegate_to: "{{ docker__swarm_managers }}[0]"
+  delegate_to: "{{ groups['docker__swarm_managers'][0] }}"
   run_once: True
 
 - name: Get worker join-token
   command: docker swarm join-token -q worker
   register: docker__swarm_worker_token
-  delegate_to: "{{ docker__swarm_managers }}[0]"
+  delegate_to: "{{ groups['docker__swarm_managers'][0] }}"
   delegate_facts: True
   when:
-    - "{{ docker__swarm_workers }} in group_names"
+    - "'docker__swarm_workers' in group_names"
     - not docker__node_active
     - not docker__node_pending
 
 - name: Get manager join-token
   command: docker swarm join-token -q manager
   register: docker__swarm_manager_token
-  delegate_to: "{{ docker__swarm_managers }}[0]"
+  delegate_to: "{{ groups['docker__swarm_managers'][0] }}"
   delegate_facts: True
   when:
-    - "{{ docker__swarm_managers }} in group_names"
-    - inventory_hostname != "{{ docker__swarm_managers }}[0]"
+    - "'docker__swarm_managers' in group_names"
+    - "inventory_hostname != groups['docker__swarm_managers'][0]"
     - not docker__node_active
     - not docker__node_pending
 
@@ -55,8 +55,8 @@
     join_token: "{{ docker__swarm_manager_token.stdout }}"
     remote_addrs: "{{ docker__swarm_remote_addrs }}"
   when:
-    - "{{ docker__swarm_managers }} in group_names"
-    - inventory_hostname != "{{ docker__swarm_managers }}[0]"
+    - "'docker__swarm_managers' in group_names"
+    - "inventory_hostname != groups['docker__swarm_managers'][0]"
     - not docker__node_active
     - not docker__node_pending
 
@@ -67,6 +67,6 @@
     join_token: "{{ docker__swarm_worker_token.stdout }}"
     remote_addrs: "{{ docker__swarm_remote_addrs }}"
   when:
-    - "{{ docker__swarm_workers }} in group_names"
+    - "'docker__swarm_workers' in group_names"
     - not docker__node_active
     - not docker__node_pending
