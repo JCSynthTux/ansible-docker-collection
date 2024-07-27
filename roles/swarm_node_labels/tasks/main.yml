@@ -1,8 +1,8 @@
 ---
 - name: Set swarm node labels
-  docker_node:
-    hostname: '{{ ansible_hostname }}'
-    labels: '{{ docker__swarm_node_labels_combines }}'
-    label_state: '{{ docker__swarm_node_labels_state | default(replace)  }}'
-  delegate_to: '{{ docker__swarm_managers }}'
+  community.docker.docker_node:
+    hostname: "{{ ansible_hostname }}"
+    labels: "{{ docker__swarm_node_labels_combines }}"
+    label_state: "{{ docker__swarm_node_labels_state | default(replace)  }}"
+  delegate_to: "{{ docker__swarm_managers }}"
   run_once: True

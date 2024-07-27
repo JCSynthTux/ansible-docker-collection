@@ -18,22 +18,22 @@
     #  when: docker__swarm_node_role == 'manager'
 
     - name: Demote node to worker
-      docker_node:
-        hostname: '{{ ansible_hostname }}'
-        role: 'worker'
-      delegate_to: '{{ docker__swarm_managers }}'
+      community.docker.docker_node:
+        hostname: "{{ ansible_hostname }}"
+        role: "worker"
+      delegate_to: "{{ docker__swarm_managers }}"
       run_once: True
       #when: docker__swarm_leader == true
 
     - name: Drain node
-      docker_node:
-        hostname: '{{ ansible_hostname }}'
-        availability: 'drain'
-      delegate_to: '{{ docker__swarm_managers }}'
+      community.docker.docker_node:
+        hostname: "{{ ansible_hostname }}"
+        availability: "drain"
+      delegate_to: "{{ docker__swarm_managers }}"
       run_once: True
 
     - name: Check for running containers
-      docker_container_info:
+      community.docker.docker_container_info:
       register: docker__container_info
       until: docker__container_info.containers | length == 0
       retries: 5
@@ -48,27 +48,26 @@
         docker__running_containers: "{{ container_info.containers | length == 0 }}"
 
     - name: Node leaves swarm
-      docker_swarm:
-        state: 'absent'
-      when: docker__running_containers == False   
+      community.docker.docker_swarm:
+        state: "absent"
+      when: docker__running_containers == False
 
     - name: Managers removes node from swarm
-      docker_swarm:
-        state: 'remove'
-        id: '{{ ansible_hostname }}'
-      delegate_to: '{{ docker__swarm_managers }}'
+      community.docker.docker_swarm:
+        state: "remove"
+        id: "{{ ansible_hostname }}"
+      delegate_to: "{{ docker__swarm_managers }}"
       run_once: True
       when: docker__running_containers == False
-   
+
     - name: Prune everything
-      docker_prune:
+      community.docker.docker_prune:
         containers: true
         images: true
         images_filters:
         dangling: false
         networks: true
         volumes: true
-        builder_cache: true 
+        builder_cache: true
       when: docker__running_containers == False
   when: docker__node_leave == True
-

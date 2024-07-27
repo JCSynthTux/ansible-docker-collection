@@ -1,13 +1,13 @@
 ---
 - name: Set node availability
-  docker_node:
-    hostname: '{{ ansible_hostname }}'
-    availability: '{{ docker__swarm_node_availability }}'
-  delegate_to: '{{ docker__swarm_managers }}'
+  community.docker.docker_node:
+    hostname: "{{ ansible_hostname }}"
+    availability: "{{ docker__swarm_node_availability }}"
+  delegate_to: "{{ docker__swarm_managers }}"
   run_once: True
-    
+
 - name: Check for running containers
-  docker_container_info:
+  community.docker.docker_container_info:
   register: docker__container_info
   until: docker__container_info.containers | length == 0
   retries: 5
@@ -23,4 +23,3 @@
   set_fact:
     docker__running_containers: "{{ container_info.containers | length == 0 }}"
   when: docker__swarm_node_availability == 'drain'
-
