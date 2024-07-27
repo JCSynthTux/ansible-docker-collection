@@ -1,0 +1,72 @@
+---
+- name: Get swarm state
+  command: >-
+    docker info -f {% raw %}'{{ .Swarm.LocalNodeState }}'{% endraw %}
+  changed_when: false
+  register: docker__swarm_state
+
+- name: Set swarm state facts
+  set_fact:
+    docker__node_active: "{{ docker__swarm_state.stdout == 'active' }}"
+    docker__node_pending: "{{ docker__swarm_state.stdout == 'pending' }}"
+
+- name: Init swarm
+  community.docker.docker_swarm:
+    state: present
+    name: "{{ docker__swarm_name }}"
+    advertise_addr: "{{ docker__swarm_advertise_addr }}"
+    data_path_addr: "{{ docker__swarm_data_path_addr }}"
+    data_path_port: "{{ docker__swarm_data_path_port }}"
+    default_addr_pool: "{{ docker__swarm_default_addr_pool | default(omit) }}"
+    dispatcher_heartbeat_period: "{{ docker__swarm_dispatcher_heartbeat_period }}"
+    election_tick: "{{ docker__swarm_election_tick }}"
+    heartbeat_tick: "{{ docker__swarm_heartbeat_tick }}"
+    listen_addr: "{{ docker__swarm_listen_addr }}"
+    subnet_size: "{{ docker__swarm_subnet_size | default (omit) }}"
+    task_history_retention_limit: "{{ docker__swarm_task_history_retention_limit }}"
+  delegate_to: "{{ docker__swarm_managers }}[0]"
+  run_once: True
+
+- name: Get worker join-token
+  command: docker swarm join-token -q worker
+  register: docker__swarm_worker_token
+  delegate_to: "{{ docker__swarm_managers }}[0]"
+  delegate_facts: True
+  when:
+    - "{{ docker__swarm_workers }} in group_names"
+    - not docker__node_active
+    - not docker__node_pending
+
+- name: Get manager join-token
+  command: docker swarm join-token -q manager
+  register: docker__swarm_manager_token
+  delegate_to: "{{ docker__swarm_managers }}[0]"
+  delegate_facts: True
+  when:
+    - "{{ docker__swarm_managers }} in group_names"
+    - inventory_hostname != "{{ docker__swarm_managers }}[0]"
+    - not docker__node_active
+    - not docker__node_pending
+
+- name: Add managers
+  community.docker.docker_swarm:
+    state: join
+    advertise_addr: "{{ docker__swarm_advertise_addr }}"
+    join_token: "{{ docker__swarm_manager_token.stdout }}"
+    remote_addrs: "{{ docker__swarm_remote_addrs }}"
+  when:
+    - "{{ docker__swarm_managers }} in group_names"
+    - inventory_hostname != "{{ docker__swarm_managers }}[0]"
+    - not docker__node_active
+    - not docker__node_pending
+
+- name: Add workers
+  community.docker.docker_swarm:
+    state: join
+    advertise_addr: "{{ docker__swarm_advertise_addr }}"
+    join_token: "{{ docker__swarm_worker_token.stdout }}"
+    remote_addrs: "{{ docker__swarm_remote_addrs }}"
+  when:
+    - "{{ docker__swarm_workers }} in group_names"
+    - not docker__node_active
+    - not docker__node_pending

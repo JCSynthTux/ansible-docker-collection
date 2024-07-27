@@ -1,0 +1,20 @@
+---
+docker__swarm_name: "ansible-swarm"
+
+docker__swarm_advertise_addr: "{{ hostvars[docker__swarm_managers[0]].ansible_facts.ansible_default_ipv4.address }}:2377"
+
+docker__swarm_data_path_addr: "{{ hostvars[docker__swarm_managers[0]].ansible_facts.ansible_default_ipv4.address }}"
+
+docker__swarm_data_path_port: "9789"
+
+dispatcher_heartbeat_period: "5000000000"
+
+docker__swarm_election_tick: "10"
+
+docker__swarm_heartbeat_tick: "1"
+
+docker__swarm_listen_addr: "{{ hostvars[docker__swarm_managers[0]].ansible_facts.ansible_default_ipv4.address }}:2377"
+
+docker__swarm_remote_addrs: "{{ hostvars[docker__swarm_managers[0]].ansible_facts.ansible_default_ipv4.address }}:2377"
+
+task_history_retention_limit: "5"
